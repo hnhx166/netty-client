@@ -1,0 +1,14 @@
+2018-09-18 17:09:33: java.lang.ArithmeticException: / by zero
+	at com.vinux.push.logs.Logger.main(Logger.java:102)
+2018-09-18 17:09:45: java.lang.ArithmeticException: / by zero
+	at com.vinux.push.logs.Logger.main(Logger.java:102)
+2018-09-18 17:09:47: java.lang.ArithmeticException: / by zero
+	at com.vinux.push.logs.Logger.main(Logger.java:102)
+2018-09-18 17:09:51: java.lang.ArithmeticException: / by zero
+	at com.vinux.push.logs.Logger.main(Logger.java:102)
+2018-09-18 17:09:53: java.lang.ArithmeticException: / by zero
+	at com.vinux.push.logs.Logger.main(Logger.java:102)
+2018-09-18 17:09:55: java.lang.ArithmeticException: / by zero
+	at com.vinux.push.logs.Logger.main(Logger.java:102)
+2018-09-18 17:09:57: java.lang.ArithmeticException: / by zero
+	at com.vinux.push.logs.Logger.main(Logger.java:102)
