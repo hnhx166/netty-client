@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.vinux.push.entity.ChannelCache;
 import com.vinux.push.entity.Message;
+import com.vinux.push.entity.User;
 import com.vinux.push.enu.MessageType;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -20,8 +21,14 @@ import io.netty.util.concurrent.ScheduledFuture;
  *
  */
 public class HeartBeatHandler extends SimpleChannelInboundHandler<Message> {
-
+	
+	private User user;
+	
 	private volatile ScheduledFuture<?> heartBeat;
+	
+	public HeartBeatHandler(User user) {
+		this.user = user;
+	}
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -37,6 +44,8 @@ public class HeartBeatHandler extends SimpleChannelInboundHandler<Message> {
 			// 50秒钟发一个心跳
 			heartBeat = ctx.executor().scheduleAtFixedRate(new HeartBeatTask(ctx), 0, 50000, TimeUnit.MILLISECONDS);
 			Message msg = new Message();
+			msg.setUid(user.getUid());
+			msg.setVersion(1);
 			msg.setMsgType(MessageType.MSG_BOX_USER_INFO.getValue());
 	        ctx.channel().writeAndFlush(msg);
 		} else if (message != null && message.getMsgType() == MessageType.HEARTBEAT_RESP.getValue()) {

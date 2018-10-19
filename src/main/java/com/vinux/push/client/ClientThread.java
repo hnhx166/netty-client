@@ -1,7 +1,6 @@
 package com.vinux.push.client;
 
-import com.vinux.push.entity.Message;
-import com.vinux.push.enu.MessageType;
+import com.vinux.push.entity.User;
 import com.vinux.push.server.ClientServer;
 
 public class ClientThread extends Thread {
@@ -12,22 +11,19 @@ public class ClientThread extends Thread {
 	}
 	
 	public void run() {
-		for(int i = 0; i < no; i++) {
-			ClientServer client = new ClientServer();
+		System.out.println(no);
+//		try {
+//			Thread.sleep(60000);
+//			System.out.println("----------" + no);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+			String uid = "uid" + (no);
+			ClientServer client = new ClientServer(new User(uid));
 			try {
 				client.connect();
-				Message message = new Message();
-				message.setMsg("消息:" + Thread.currentThread());
-				message.setMsgType(MessageType.MSG_BOX_PUSH.getValue());
-//				message.setUid(Thread.currentThread().getId()+"");
-				message.setReceiveId("1001");
-				client.push(message);
-				System.out.println(Thread.currentThread().getId()+", " + (i+1));
-				
-				Thread.sleep(2000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
 	}
 }

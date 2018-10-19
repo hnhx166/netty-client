@@ -17,14 +17,14 @@ public class Message implements Serializable {
 	//应用ID
     private String appId;
     
-    //设备ID（暂时设置为MAC地址）
-//    private final String deviceId = Device.getMacAddr();
+    //设备ID
+//    private String deviceId;
  
     //版本
     private int version;
  
-    //用户ID
-    private String uid  = Device.getMacAddr();
+    //消息发送人ID
+    private String uid;
  
     //消息类型 0：登录 1：文字消息 2:文件 3：视频
     private byte msgType;
@@ -36,8 +36,14 @@ public class Message implements Serializable {
 //    private int sendType;
 //    //群组ID
 //    private Integer groupId;
-    //接收方
+    //消息接收人
     private String receiveId;
+    
+    //消息组
+    private String groupId;
+    
+    //接收类型(默认:用户消息)
+    private byte receiveType;
  
     //消息内容
     private String msg;

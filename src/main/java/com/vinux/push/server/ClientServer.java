@@ -5,13 +5,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-//import org.springframework.boot.CommandLineRunner;
-//import org.springframework.core.annotation.Order;
-//import org.springframework.stereotype.Component;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import com.vinux.push.entity.ChannelCache;
 import com.vinux.push.entity.Config;
 import com.vinux.push.entity.Message;
+import com.vinux.push.entity.User;
 import com.vinux.push.handler.ConnectHandler;
 import com.vinux.push.handler.HeartBeatHandler;
 import com.vinux.push.handler.PushMsgHandler;
@@ -31,22 +32,36 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
-//@Component
-//@Order(value=1)
-public class ClientServer {//implements CommandLineRunner {
+@Component
+@Order(value=1)
+public class ClientServer implements CommandLineRunner {
+	
+	User user;
+	public ClientServer(User user) {
+		this.user = user;
+	}
 	
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     //换掉ip
     private String host = Config.SERVER_HOST;//"123.206.13.254";
     private int port = Config.SERVER_PORT;
+    
+    private EventLoopGroup group = null;
+    private Bootstrap bs = null;
+    private ChannelFuture future = null;
+    
+    
+    
 
-    public void connect() throws Exception {
+    public void connect() {
+    	
+    	boolean connectOk = false;
         try{
-            EventLoopGroup group = new NioEventLoopGroup();
-            Bootstrap bs = new Bootstrap();
+        	group = new NioEventLoopGroup();
+        	bs = new Bootstrap();
             bs.group(group)
                     .channel(NioSocketChannel.class)
-                    .option(ChannelOption.SO_KEEPALIVE, true)
+                    .option(ChannelOption.SO_KEEPALIVE, true)//保持连接
                     .handler(new ChannelInitializer<SocketChannel>() {
 
                         @Override
@@ -57,30 +72,38 @@ public class ClientServer {//implements CommandLineRunner {
                             p.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
                             p.addLast(new ReadTimeoutHandler(1000));
                             p.addLast(new ConnectHandler());
-                            p.addLast(new HeartBeatHandler());
+                            p.addLast(new HeartBeatHandler(user));
                             p.addLast(new PushMsgHandler());
                         }
                     });
             System.out.println("开始连接");
-            ChannelFuture future = bs.connect(new InetSocketAddress(host, port)).sync();
+            future = bs.connect(new InetSocketAddress(host, port)).sync();
             future.channel().closeFuture().sync();//这一步会阻塞住
             System.out.println("关闭后");
-        } finally {
-            //断错重连
-            executor.execute(new Runnable() {
-                public void run() {
-                    System.out.println("Client 尝试重新连接-->>>>>>");
-                    //等待InterVAl时间，重连
-                    try {
-                        TimeUnit.SECONDS.sleep(5);
-                        //发起重连
-                        connect();
-                    } catch (Exception e) {
-                    	System.out.println(e.getMessage());
-                        //e.printStackTrace();
-                    }
-                }
-            });
+            connectOk = true;
+        }catch(Exception e) {
+        	e.printStackTrace();
+        	//连接失败关闭线程，否则线程一直增加
+        	bs.group().shutdown();
+        	connectOk = false;
+        }finally {
+//        	if(!connectOk) {
+	            //断错重连
+	            executor.execute(new Runnable() {
+	                public void run() {
+	                    System.out.println("Client 尝试重新连接-->>>>>>00000");
+	                    //等待InterVAl时间，重连
+	                    try {
+	                        TimeUnit.SECONDS.sleep(5);
+	                        //发起重连
+	                        connect();
+	                    } catch (Exception e) {
+	                    	//System.out.println(e.getMessage());
+	                        e.printStackTrace();
+	                    }
+	                }
+	            });
+//        	}
         }
     }
     
@@ -92,10 +115,22 @@ public class ClientServer {//implements CommandLineRunner {
     	}
     }
 
-//	@Override
-//	public void run(String... arg0) throws Exception {
-//		connect();
-//		
-//	}
+	@Override
+	public void run(String... arg0) {
+		System.out.println("客户端run connect。。。。。。。");
+		connect();
+		
+	}
+    
+    public static void main(String[] args) {
+//    	User u = new User();
+//    	u.setUid("uid-test");
+//    	ClientServer server = new ClientServer(u);
+//    	try {
+//			server.connect();;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
 
 }

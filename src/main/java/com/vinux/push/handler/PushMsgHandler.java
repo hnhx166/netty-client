@@ -13,8 +13,9 @@ public class PushMsgHandler extends SimpleChannelInboundHandler<Message>{
 	@Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         Message message = (Message) msg;
-        if(message.getMsgType() == MessageType.MSG_CHAT_SINGLE_PUSH.getValue()){//点对点
-        	Logger.logInfo(message.getReceiveId() + " 收到 " + message.getUid() + "发送的消息：" + message.getMsg());
+        if(message != null && message.getMsgType() == MessageType.MSG_BOX_PUSH.getValue()){//点对点
+        	System.out.println(message.getReceiveId() + " 收到 " + message.getUid() + "发送的消息：" + message.getMsg());
+        	//Logger.logInfo(message.getReceiveId() + " 收到 " + message.getUid() + "发送的消息：" + message.getMsg());
         }
     }
 

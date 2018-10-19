@@ -1,27 +1,35 @@
 package com.vinux;
 
-import com.vinux.push.entity.ChannelCache;
-import com.vinux.push.server.BroadcastServer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.vinux.cfg.Config;
+import com.vinux.push.entity.Message;
+import com.vinux.push.enu.MessageType;
 import com.vinux.push.server.ClientServer;
 
-//@RestController
-//@SpringBootApplicationE0-3F-49-E7-EC-46
+@RestController
+@SpringBootApplication
 public class NettyClientApplication {
 	
 	public static void main(String[] args) {
+		SpringApplication.run(NettyClientApplication.class, args);
+//		System.out.println("开启播报线程***************************");
+//		ChannelCache.broadcastServer = new BroadcastServer();
+//		ChannelCache.broadcastServer.start();
+//		System.out.println("播报线程启动完成***************************");
+//		ClientServer client = new ClientServer();
+//		try {
+//			client.connect();
+//			System.out.println("客户端线程启动。。。。。。。");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		System.out.println("开启播报线程***************************");
-		ChannelCache.broadcastServer = new BroadcastServer();
-		ChannelCache.broadcastServer.start();
-		System.out.println("播报线程启动完成***************************");
-		ClientServer client = new ClientServer();
-		try {
-			client.connect();
-			System.out.println("客户端线程启动。。。。。。。");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 
@@ -86,14 +94,21 @@ public class NettyClientApplication {
 //        System.out.println("zsl==========消息推送完毕");
 //	}
 //	
-//	@Autowired
-//	ClientServer clientServer;
-//	
-//	@RequestMapping("push")
-//	public void push(String msg) {
-//		Message message = new Message();
-//        message.setMsgType(MessageType.MSG_PUSH.getValue());
-//        message.setMsg(msg);
-//        clientServer.push(message);
-//	}
+	@Autowired
+	ClientServer clientServer;
+	
+	@Autowired
+	Config cfg;
+	
+	@RequestMapping("push")
+	public void push(String msg) {
+		Message message = new Message();
+        message.setMsgType(MessageType.MSG_BOX_PUSH.getValue());
+        message.setMsg(msg);
+        message.setAppId("client");
+        message.setVersion(1);
+        message.setUid(cfg.getUid());
+        message.setReceiveId(cfg.getRecId());
+        clientServer.push(message);
+	}
 }
