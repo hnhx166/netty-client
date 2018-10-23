@@ -36,10 +36,12 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 @Order(value=1)
 public class ClientServer implements CommandLineRunner {
 	
-	User user;
-	public ClientServer(User user) {
-		this.user = user;
-	}
+//	User user;
+//	public ClientServer(User user) {
+//		this.user = user;
+//	}
+	
+	User user = new User("uid-001");
 	
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     //换掉ip
@@ -84,7 +86,9 @@ public class ClientServer implements CommandLineRunner {
         }catch(Exception e) {
         	e.printStackTrace();
         	//连接失败关闭线程，否则线程一直增加
-        	bs.group().shutdown();
+//        	bs.group().shutdown();
+        	group.shutdownGracefully();
+//        	bs
         	connectOk = false;
         }finally {
 //        	if(!connectOk) {

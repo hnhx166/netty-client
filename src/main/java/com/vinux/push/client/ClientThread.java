@@ -18,12 +18,12 @@ public class ClientThread extends Thread {
 //		} catch (InterruptedException e) {
 //			e.printStackTrace();
 //		}
-			String uid = "uid" + (no);
-			ClientServer client = new ClientServer(new User(uid));
-			try {
-				client.connect();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+//			String uid = "uid" + (no);
+//			ClientServer client = new ClientServer(new User(uid));
+//			try {
+//				client.connect();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
 	}
 }
