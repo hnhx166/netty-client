@@ -1,7 +1,0 @@
-server: 
-  port: 7082
-  tomcat: 
-    maxThreads: 2000
-uid: uid002
-recId: uid001
-    

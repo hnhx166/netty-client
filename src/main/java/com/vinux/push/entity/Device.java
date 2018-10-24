@@ -5,8 +5,12 @@ import java.net.NetworkInterface;
 
 public class Device {
 
+	public static String getOsName() {
+		return System.getProperty("os.name");
+	}
+
 	public static String getMacAddr() {
-		try {
+		try{
 			InetAddress ia = InetAddress.getLocalHost();
 			// 获得网络接口对象（即网卡），并得到mac地址，mac地址存在于一个byte数组中。
 			byte[] mac = NetworkInterface.getByInetAddress(ia).getHardwareAddress();

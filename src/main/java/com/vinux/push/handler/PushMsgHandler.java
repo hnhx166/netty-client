@@ -15,6 +15,7 @@ public class PushMsgHandler extends SimpleChannelInboundHandler<Message>{
         Message message = (Message) msg;
         if(message != null && message.getMsgType() == MessageType.MSG_BOX_PUSH.getValue()){//点对点
         	System.out.println(message.getReceiveId() + " 收到 " + message.getUid() + "发送的消息：" + message.getMsg());
+        	//TODO 消息处理，语音播报
         	//Logger.logInfo(message.getReceiveId() + " 收到 " + message.getUid() + "发送的消息：" + message.getMsg());
         }
     }

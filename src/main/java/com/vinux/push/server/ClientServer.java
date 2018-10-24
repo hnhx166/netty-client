@@ -5,14 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
-import com.vinux.push.entity.ChannelCache;
 import com.vinux.push.entity.Config;
-import com.vinux.push.entity.Message;
-import com.vinux.push.entity.User;
 import com.vinux.push.handler.ConnectHandler;
 import com.vinux.push.handler.HeartBeatHandler;
 import com.vinux.push.handler.PushMsgHandler;
@@ -32,16 +25,9 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
-@Component
-@Order(value=1)
-public class ClientServer implements CommandLineRunner {
-	
-//	User user;
-//	public ClientServer(User user) {
-//		this.user = user;
-//	}
-	
-	User user = new User("uid-001");
+//@Component
+//@Order(value=1)
+public class ClientServer /*implements CommandLineRunner */{
 	
 	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     //换掉ip
@@ -52,12 +38,8 @@ public class ClientServer implements CommandLineRunner {
     private Bootstrap bs = null;
     private ChannelFuture future = null;
     
-    
-    
-
     public void connect() {
     	
-    	boolean connectOk = false;
         try{
         	group = new NioEventLoopGroup();
         	bs = new Bootstrap();
@@ -74,7 +56,7 @@ public class ClientServer implements CommandLineRunner {
                             p.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
                             p.addLast(new ReadTimeoutHandler(1000));
                             p.addLast(new ConnectHandler());
-                            p.addLast(new HeartBeatHandler(user));
+                            p.addLast(new HeartBeatHandler());
                             p.addLast(new PushMsgHandler());
                         }
                     });
@@ -82,14 +64,12 @@ public class ClientServer implements CommandLineRunner {
             future = bs.connect(new InetSocketAddress(host, port)).sync();
             future.channel().closeFuture().sync();//这一步会阻塞住
             System.out.println("关闭后");
-            connectOk = true;
         }catch(Exception e) {
         	e.printStackTrace();
         	//连接失败关闭线程，否则线程一直增加
 //        	bs.group().shutdown();
         	group.shutdownGracefully();
 //        	bs
-        	connectOk = false;
         }finally {
 //        	if(!connectOk) {
 	            //断错重连
@@ -111,30 +91,19 @@ public class ClientServer implements CommandLineRunner {
         }
     }
     
-    //消息推送
-    public void push(Message message){
-    	if(ChannelCache.channel != null) {
-    		System.out.println("client push 消息 + " + message.toString());
-    		ChannelCache.channel.writeAndFlush(message);
-    	}
-    }
+//    //消息推送
+//    public void push(Message message){
+//    	if(ChannelCache.channel != null) {
+//    		System.out.println("client push 消息 + " + message.toString());
+//    		ChannelCache.channel.writeAndFlush(message);
+//    	}
+//    }
 
-	@Override
-	public void run(String... arg0) {
-		System.out.println("客户端run connect。。。。。。。");
-		connect();
-		
-	}
-    
-    public static void main(String[] args) {
-//    	User u = new User();
-//    	u.setUid("uid-test");
-//    	ClientServer server = new ClientServer(u);
-//    	try {
-//			server.connect();;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-	}
+//	@Override
+//	public void run(String... arg0) {
+//		System.out.println("客户端run connect。。。。。。。");
+//		connect();
+//		
+//	}
 
 }
